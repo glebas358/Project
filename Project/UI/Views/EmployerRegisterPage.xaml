@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Project.EmployerRegisterPage"
+             Title="Приём" BackgroundColor="#0E3255" Shell.TitleColor="#009BAC">
+
+    <Grid>
+
+        <ScrollView>
+
+            <VerticalStackLayout Padding="30" HorizontalOptions="Center">
+            <Label Text="{Binding ResultMessage}" Margin="30" HorizontalTextAlignment="Center" TextColor="{Binding ResultColor}" FontSize="18" FontAttributes="Bold"/>
+
+                <Editor Placeholder="Введите номер посылки" Text="{Binding Number}" FontSize="18" BackgroundColor="#009BAC" TextColor="#CBFAFF" PlaceholderColor="#0E3255"/>
+
+                <Label Text="Зоны на складе: A B C" Margin="0,30,0,5" HorizontalTextAlignment="Center" FontSize="18" FontAttributes="Bold" TextColor="#009BAC"/>
+
+                <Editor Placeholder="Зона" Text="{Binding Zone}" Margin="0,0,0,30" FontSize="18" BackgroundColor="#009BAC" TextColor="#CBFAFF" PlaceholderColor="#0E3255"/>
+
+                <Label Text="Ячейки: 1-20" Margin="0,0,0,5" HorizontalTextAlignment="Center" FontSize="18" FontAttributes="Bold" TextColor="#009BAC"/>
+
+                <Editor Placeholder="Ячейка" Text="{Binding Cell}" FontSize="18" BackgroundColor="#009BAC" TextColor="#CBFAFF" PlaceholderColor="#0E3255"/>
+
+                <Button Text="Зарегестрировать" Command="{Binding RegisterCommand}" Margin="0,35,0,0" FontSize="25" FontAttributes="Bold" BackgroundColor="#009BAC" TextColor="#CBFAFF"/>   
+            </VerticalStackLayout>
+
+
+        </ScrollView>
+
+        <Grid IsVisible="{Binding IsBusy}" 
+          BackgroundColor="#99000000">
+
+            <Frame HorizontalOptions="Center" 
+               VerticalOptions="Center" 
+               Padding="30" 
+               CornerRadius="15" 
+               BackgroundColor="#CBFAFF"
+               HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                   Color="#009BAC" 
+                                   WidthRequest="50" 
+                                   HeightRequest="50" />
+
+                    <Label Text="Загрузка..." 
+                       TextColor="#009BAC" 
+                       HorizontalTextAlignment="Center" 
+                       FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+
+    </Grid>
+
+
+
+</ContentPage>

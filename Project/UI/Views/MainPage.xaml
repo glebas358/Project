@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Project.MainPage"
+             Title="Вход" BackgroundColor="#0E3255" Shell.TitleColor="#009BAC">
+
+
+    <Grid>
+
+        <ScrollView>
+
+            <VerticalStackLayout Padding="20" Spacing="15">
+                <Label Text="Вход в систему" FontSize="35" HorizontalOptions="Center" TextColor="#009BAC"  FontAttributes="Bold"/>
+
+                <Entry Placeholder="Логин" Text="{Binding Login}" BackgroundColor="#009BAC" TextColor="#CBFAFF" FontAttributes="Bold" PlaceholderColor="#0E3255"/>
+        
+                <Entry Placeholder="Пароль" Text="{Binding Password}" IsPassword="True" BackgroundColor="#009BAC" TextColor="#CBFAFF" FontAttributes="Bold" PlaceholderColor="#0E3255"/>
+
+    
+
+                <Button Text="Проверить" Command="{Binding CheckCommand}" BackgroundColor="#009BAC" TextColor="#CBFAFF"/>
+
+                <Label Text="{Binding ResultMessage}"
+                       FontSize="18"
+                       HorizontalOptions="Center"
+                       TextColor="Red" />
+
+                <ActivityIndicator IsRunning="{Binding IsTrue}" Color="AntiqueWhite" HorizontalOptions="Center" VerticalOptions="Center"/>
+    
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <Grid IsVisible="{Binding IsBusy}" 
+            BackgroundColor="#99000000">
+
+            <Frame HorizontalOptions="Center" 
+               VerticalOptions="Center" 
+               Padding="30" 
+               CornerRadius="15" 
+               BackgroundColor="#CBFAFF"
+               HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                               Color="#009BAC" 
+                               WidthRequest="50" 
+                               HeightRequest="50" />
+
+                    <Label Text="Загрузка..." 
+                       TextColor="#009BAC" 
+                       HorizontalTextAlignment="Center" 
+                       FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+
+    </Grid>
+
+
+</ContentPage>
+
+
+

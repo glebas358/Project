@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Project.UI.Views.EmployerIssuePackage"
+             Title="Выдача посылок" BackgroundColor="#0E3255" Shell.TitleColor="#009BAC">
+
+    <Grid>
+
+        <ScrollView>
+
+            <VerticalStackLayout Padding="30" HorizontalOptions="Center">
+
+
+
+
+
+
+                <Picker ItemsSource="{Binding SearchTypes}"
+                    SelectedIndex="{Binding SelectedSearchTypeIndex}"
+                    Title="Выберите способ поиска"
+                    TitleColor="#009BAC"
+                    HorizontalTextAlignment="Center"
+                    FontSize="20" FontAttributes="Bold" BackgroundColor="#009BAC" TextColor="#CBFAFF" 
+                />
+
+
+                <Label Text="Поиск посылки" Margin="30" HorizontalTextAlignment="Center" FontSize="20" FontAttributes="Bold" TextColor="#009BAC"/>
+
+                <Entry Placeholder="{Binding SearchPlaceholder}" Text="{Binding SearchQuery}" BackgroundColor="#009BAC" TextColor="#CBFAFF" PlaceholderColor="#0E3255"/>
+
+                <Button  Text="Поиск" Margin="0,50,0,0" Command="{Binding SearchCommand}" FontSize="30" FontAttributes="Bold" BackgroundColor="#009BAC" TextColor="#CBFAFF"/>
+
+                <Frame Margin="0,8" Padding="0,10,0,25" BackgroundColor="#009BAC" IsVisible="{Binding HasResultMessage}">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding ResultMessage}" HorizontalTextAlignment="Center" Margin="0,25,0,0" FontSize="16" FontAttributes="Bold" TextColor="#CBFAFF"/>
+
+
+                        <Label Text="{Binding Description}" HorizontalTextAlignment="Center"  Margin="0,25,0,0"  TextColor="#CBFAFF" />
+                        <HorizontalStackLayout>
+                            <Button Text="Выдача" Margin="10" Padding="20" BackgroundColor="#0E3255" TextColor="#CBFAFF" IsVisible="{Binding HasButtons}"/>
+                            <Button Text="Возврат" Margin="10" Padding="20" BackgroundColor="#0E3255" TextColor="#CBFAFF" IsVisible="{Binding HasButtons}"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <CollectionView ItemsSource="{Binding FoundPackages}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+
+                            <Frame Margin="0,5" Padding="10" BackgroundColor="#009BAC">
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding Number, StringFormat='Номер: {0}'}" FontAttributes="Bold" FontSize="16" TextColor="#CBFAFF"/>
+                                    <Label Text="{Binding Contents, StringFormat='Содержимое: {0}'}" TextColor="#CBFAFF"/>
+                                    <Label Text="{Binding StorageLocation.Zone, StringFormat='Зона: {0}'}" TextColor="#CBFAFF"/>
+                                    <Label Text="{Binding StorageLocation.Cell, StringFormat='Ячейка: {0}'}" TextColor="#CBFAFF"/>
+                                    <Button Text="Выдача" FontAttributes="Bold" BackgroundColor="#0E3255" TextColor="#CBFAFF" />
+                                    <Button Text="Возврат" FontAttributes="Bold" Margin="0,5" BackgroundColor="#0E3255" TextColor="#CBFAFF" />
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+
+
+                
+
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <Grid IsVisible="{Binding IsBusy}" 
+              BackgroundColor="#99000000">
+        
+            <Frame HorizontalOptions="Center" 
+                   VerticalOptions="Center" 
+                   Padding="30" 
+                   CornerRadius="15" 
+                   BackgroundColor="#CBFAFF"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                   
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                       Color="#009BAC" 
+                                       WidthRequest="50" 
+                                       HeightRequest="50" />
+                    
+                    <Label Text="Загрузка..." 
+                           TextColor="#009BAC" 
+                           HorizontalTextAlignment="Center" 
+                           FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+
+    </Grid>
+
+</ContentPage>
