@@ -58,7 +58,7 @@ namespace Project.ViewModels
             IsBusy = true;
             try
             {
-                var employee = await _authService.LoginAsync(Login, Password);
+                var employee = await _authService.LoginAsync(Login.Trim(), Password);
 
 
                 if (employee == null)

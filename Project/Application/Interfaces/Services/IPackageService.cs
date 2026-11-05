@@ -17,6 +17,8 @@ namespace Project.Application.Interfaces.Services
 
         Task<List<Package>> SearchByNameAsync(string name);
 
+        Task<Package?> ExtraditionPackageAsync(string number);
+
 
 
 

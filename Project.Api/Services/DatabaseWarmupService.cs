@@ -23,15 +23,15 @@ public class DatabaseWarmupService : BackgroundService
         {
             try
             {
-                // Создаем новый Scope, чтобы получить DbContext
+            
                 using var scope = _scopeFactory.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                // Отправляем простейший запрос "SELECT 1", чтобы разбудить пулер
+               
                 await context.Database.ExecuteSqlRawAsync("SELECT 1", stoppingToken);
 
                 _logger.LogInformation("База данных успешно прогрета и готова к работе!");
-                return; // Выходим, если получилось
+                return;
             }
             catch (Exception ex)
             {

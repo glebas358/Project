@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 using System.Text;
 
 
+
 namespace Project.Infrastructure.Repositories
 {
     public class ApiPackageRepository : IPackageRepository
@@ -97,6 +98,23 @@ namespace Project.Infrastructure.Repositories
 
             return await response.Content.ReadFromJsonAsync<List<Package>>();
 
+        }
+
+        public async Task<Package> ExtraditionPackageAsync(string number)
+        {
+            var requestData = new { Number = number };
+
+            var response = await _httpClient.PostAsJsonAsync("api/packages/extradition", requestData);
+
+            if (!response.IsSuccessStatusCode)
+            {
+
+                var errorResponse = await response.Content.ReadFromJsonAsync<ServerError>();
+
+                throw new Exception(errorResponse?.Message ?? "Неизвестная ошибка сервера");
+            }
+
+            return await response.Content.ReadFromJsonAsync<Package>();
         }
 
 

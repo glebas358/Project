@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Project.UI.ViewModels"
              x:Class="Project.UI.Views.EmployerIssuePackage"
              Title="Выдача посылок" BackgroundColor="#0E3255" Shell.TitleColor="#009BAC">
 
@@ -33,13 +34,6 @@
                 <Frame Margin="0,8" Padding="0,10,0,25" BackgroundColor="#009BAC" IsVisible="{Binding HasResultMessage}">
                     <VerticalStackLayout>
                         <Label Text="{Binding ResultMessage}" HorizontalTextAlignment="Center" Margin="0,25,0,0" FontSize="16" FontAttributes="Bold" TextColor="#CBFAFF"/>
-
-
-                        <Label Text="{Binding Description}" HorizontalTextAlignment="Center"  Margin="0,25,0,0"  TextColor="#CBFAFF" />
-                        <HorizontalStackLayout>
-                            <Button Text="Выдача" Margin="10" Padding="20" BackgroundColor="#0E3255" TextColor="#CBFAFF" IsVisible="{Binding HasButtons}"/>
-                            <Button Text="Возврат" Margin="10" Padding="20" BackgroundColor="#0E3255" TextColor="#CBFAFF" IsVisible="{Binding HasButtons}"/>
-                        </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Frame>
 
@@ -53,7 +47,12 @@
                                     <Label Text="{Binding Contents, StringFormat='Содержимое: {0}'}" TextColor="#CBFAFF"/>
                                     <Label Text="{Binding StorageLocation.Zone, StringFormat='Зона: {0}'}" TextColor="#CBFAFF"/>
                                     <Label Text="{Binding StorageLocation.Cell, StringFormat='Ячейка: {0}'}" TextColor="#CBFAFF"/>
-                                    <Button Text="Выдача" FontAttributes="Bold" BackgroundColor="#0E3255" TextColor="#CBFAFF" />
+                                    <Button Text="Выдать" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EmployerIssueViewModel}}, Path=IssuePackageCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#0E3255" 
+                                            TextColor="#CBFAFF" 
+                                            FontAttributes="Bold"/>        
                                     <Button Text="Возврат" FontAttributes="Bold" Margin="0,5" BackgroundColor="#0E3255" TextColor="#CBFAFF" />
                                 </VerticalStackLayout>
                             </Frame>

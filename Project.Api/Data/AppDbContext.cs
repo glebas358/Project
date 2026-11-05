@@ -22,13 +22,13 @@ namespace Project.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Настраиваем связь: Посылка имеет один StorageLocation
+            
             modelBuilder.Entity<Package>()
-                .HasOne(p => p.StorageLocation)   // У одной посылки есть один объект
-                .WithMany()                       // А у StorageLocation может быть много посылок
-                .HasForeignKey(p => p.StorageLocationId); // Связь происходит через это поле
+                .HasOne(p => p.StorageLocation)   
+                .WithMany()                       
+                .HasForeignKey(p => p.StorageLocationId); 
 
-            // Настраиваем связь: Посылка принадлежит одному Клиенту
+           
             modelBuilder.Entity<Package>()
                 .HasOne(p => p.Client)
                 .WithMany()

@@ -23,10 +23,11 @@ namespace Project
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
             
-            
+            //через раздачу на телефоне (нужен впн)
+            //string apiBaseUrl = "http://10.103.140.227:5071/";
 
-           
-            string apiBaseUrl = "http://";
+            //при разработке
+            string apiBaseUrl = "http://192.168.0.115:5071/";
 
 
 

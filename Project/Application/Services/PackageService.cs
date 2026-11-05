@@ -38,5 +38,10 @@ namespace Project.Application.Services
             return await _packageRepository.SearchByNameAsync(name);
         }
 
+        public async Task<Package?> ExtraditionPackageAsync(string number)
+        {
+            return await _packageRepository.ExtraditionPackageAsync(number);
+        }
+
     }   
 }

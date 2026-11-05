@@ -11,6 +11,7 @@ namespace Project.Application.Interfaces.Repositories
         
         Task<Package?> RegisterPackageAsync(string number, string zone, string cell);
 
+        
         Task<Package?> SearchByNumberAsync(string number);
 
         Task<List<Package>> SearchByPhoneAsync(string phone);
@@ -20,7 +21,7 @@ namespace Project.Application.Interfaces.Repositories
 
         Task<List<Package>> GetByStatusAsync(PackageStatus status);
 
-
+        Task<Package> ExtraditionPackageAsync(string number);
 
         Task UpdateAsync(Package package);
 

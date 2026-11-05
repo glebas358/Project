@@ -37,8 +37,7 @@ namespace Project.UI.ViewModels
         [ObservableProperty]
         private int _selectedSearchTypeIndex = 0;
 
-        [ObservableProperty]
-        private bool hasButtons = false;
+  
 
         [ObservableProperty]
         private bool _isBusy = false;
@@ -74,7 +73,6 @@ namespace Project.UI.ViewModels
             SearchQuery = string.Empty;
             ResultMessage = string.Empty;
             Description = string.Empty;
-            HasButtons = false;
             FoundPackages.Clear();
         }
 
@@ -120,17 +118,22 @@ namespace Project.UI.ViewModels
                     case SearchType.ByNumber:
                         
 
-                        var package = await _packageService.SearchByNumberAsync(SearchQuery);
-                        if (package == null)
+                        var package = await _packageService.SearchByNumberAsync(SearchQuery.Trim());
+                        if (package != null)
                         {
-                            ResultMessage = "Посылка не найдена";
-                            Description = string.Empty;
+
+        
+                                FoundPackages.Add(package);
+
+
+                            ResultMessage = $"Посылка найдена!";
+
                         }
                         else
                         {
-                            ResultMessage = $"Посылка {package.Number} в зоне {package.StorageLocation.Zone}, ячейка {package.StorageLocation.Cell}";
-                            Description = $"Продавец: {package.Seller}. Содержимое: {package.Contents}";
-                            HasButtons = true;
+                            ResultMessage = "Посылка не найдена";
+                            FoundPackages.Clear();
+
                         }
                         break;
 
@@ -138,7 +141,7 @@ namespace Project.UI.ViewModels
 
                         
 
-                        var packagePhone = await _packageService.SearchByPhoneAsync(SearchQuery);
+                        var packagePhone = await _packageService.SearchByPhoneAsync(SearchQuery.Trim());
 
                         if (packagePhone != null && packagePhone.Any())
                         {
@@ -164,7 +167,7 @@ namespace Project.UI.ViewModels
 
                     case SearchType.ByName:
                         
-                        var namePackage = await _packageService.SearchByNameAsync(SearchQuery);
+                        var namePackage = await _packageService.SearchByNameAsync(SearchQuery.Trim());
 
                         if (namePackage != null && namePackage.Any())
                         {
@@ -196,20 +199,48 @@ namespace Project.UI.ViewModels
             finally { IsBusy = false; }
 
 
-
-
-
-
-
-
-
-
-
-
         }
 
+        [RelayCommand]
+        private async Task IssuePackageAsync(Package selectedPackage)
+        {
+            if (selectedPackage == null) return;
+
             
-        
+            string result = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayPromptAsync(
+                title: "Подтверждение выдачи",
+                message: $"Введите номер посылки ({selectedPackage.Number}) для подтверждения:",
+                accept: "Выдать",
+                cancel: "Отмена");
+
+            if (string.IsNullOrWhiteSpace(result)) return;
+
+            
+            if (result.Trim() != selectedPackage.Number)
+            {
+                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", "Введенный номер не совпадает!", "ОК");
+                return;
+            }
+
+            try
+            {
+                var issuedPackage = await _packageService.ExtraditionPackageAsync(selectedPackage.Number);
+
+                if (issuedPackage != null)
+                {
+                    await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Успех", "Посылка выдана!", "ОК");
+                    FoundPackages.Clear();
+                    SearchQuery = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", ex.Message, "ОК");
+            }
+        }
+
+
+
 
 
     }

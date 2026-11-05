@@ -22,7 +22,7 @@ public class PackagesController : ControllerBase
 
 
 
-    // POST: api/packages/register
+    
     [HttpPost("register")]
     public async Task<ActionResult<Package>> Register([FromBody] RegisterPackageRequest request)
     {

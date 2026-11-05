@@ -51,7 +51,7 @@ namespace Project.UI.ViewModels
             try
             {
 
-                var package = await _packageService.RegistrAsync(Number, Zone, Cell);
+                var package = await _packageService.RegistrAsync(Number.Trim(), Zone.Trim(), Cell.Trim());
 
                 if (package == null)
                 {

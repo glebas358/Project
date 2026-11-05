@@ -149,9 +149,9 @@ namespace Project.Api.Services
                 throw new Exception("Посылка с таким номером не найдена на складе");
             }
 
-            if (package.Status != PackageStatus.Expected)
+            if (package.Status != PackageStatus.AwaitingPickup)
             {
-                throw new Exception("Эта посылка уже была принята ранее.");
+                throw new Exception("Эта посылка ещё не принята.");
             }
 
             package.Status = PackageStatus.Issued;
@@ -164,6 +164,8 @@ namespace Project.Api.Services
             location.IsOccupied = false;
 
             package.StorageLocationId = null;
+
+            await _packageRepository.UpdateAsync(package);
 
             return package;
 
