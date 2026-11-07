@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
+using Project.Application.Interfaces.Repositories;
 using Project.Application.Interfaces.Services;
 using Project.Application.Services;
 using Project.Domain.Enums;
@@ -19,6 +20,8 @@ namespace Project.UI.ViewModels
     public partial class EmployerIssueViewModel : ObservableObject
     {
         private readonly IPackageService _packageService;
+
+        private readonly IReturnReasonRepository _returnReasonRepository;
 
         public List<string> SearchTypes { get; } = new()
         {
@@ -96,9 +99,10 @@ namespace Project.UI.ViewModels
             _ => "Введите запрос"
         };
 
-        public EmployerIssueViewModel(IPackageService packageService)
+        public EmployerIssueViewModel(IPackageService packageService, IReturnReasonRepository returnReasonRepository)
         {
             _packageService = packageService;
+            _returnReasonRepository = returnReasonRepository;
         }
 
         [RelayCommand]
@@ -231,6 +235,71 @@ namespace Project.UI.ViewModels
                     await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Успех", "Посылка выдана!", "ОК");
                     FoundPackages.Clear();
                     SearchQuery = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", ex.Message, "ОК");
+            }
+        }
+
+        [RelayCommand]
+        private async Task ReturnPackageAsync(Package selectedPackage)
+        {
+            if (selectedPackage == null) return;
+
+            try
+            {
+                // 1. Загружаем причины возврата с сервера
+                var reasons = await _returnReasonRepository.GetActiveReasonsAsync();
+                if (reasons == null || reasons.Count == 0)
+                {
+                    await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", "Не удалось загрузить причины возврата.", "ОК");
+                    return;
+                }
+
+                // 2. Показываем окошко выбора причины
+                var reasonNames = reasons.Select(r => r.Name).ToArray();
+                string selectedReasonName = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayActionSheetAsync(
+                    "Выберите причину возврата",
+                    "Отмена",
+                    null,
+                    reasonNames);
+
+                // Если сотрудник нажал "Отмена" — выходим
+                if (string.IsNullOrEmpty(selectedReasonName) || selectedReasonName == "Отмена") return;
+
+                // Находим ID выбранной причины
+                var selectedReason = reasons.FirstOrDefault(r => r.Name == selectedReasonName);
+                if (selectedReason == null) return;
+
+                // 3. Показываем окошко подтверждения номера (как при выдаче)
+                string confirmNumber = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayPromptAsync(
+                    title: "Подтверждение возврата",
+                    message: $"Введите номер посылки ({selectedPackage.Number}) для подтверждения:",
+                    accept: "Вернуть",
+                    cancel: "Отмена");
+
+                if (string.IsNullOrWhiteSpace(confirmNumber)) return;
+
+                if (confirmNumber.Trim() != selectedPackage.Number)
+                {
+                    await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", "Введенный номер не совпадает!", "ОК");
+                    return;
+                }
+
+                // 4. Отправляем запрос на сервер
+                bool success = await _packageService.ReturnPackageAsync(selectedPackage.Number, selectedReason.Id);
+
+                if (success)
+                {
+                    await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Успех", "Возврат успешно оформлен!", "ОК");
+
+                    // Удаляем посылку из списка на экране
+                    if (FoundPackages.Contains(selectedPackage))
+                    {
+                        FoundPackages.Remove(selectedPackage);
+                    }
                 }
             }
             catch (Exception ex)

@@ -19,11 +19,11 @@ namespace Project.Application.Interfaces.Repositories
         Task<List<Package>> SearchByNameAsync(string name);
 
 
-        Task<List<Package>> GetByStatusAsync(PackageStatus status);
-
         Task<Package> ExtraditionPackageAsync(string number);
 
-        Task UpdateAsync(Package package);
+        Task<bool> ReturnPackageAsync(string number, long reasonId);
+
+        
 
         
     }

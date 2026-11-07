@@ -13,6 +13,8 @@ namespace Project.Api.Services.Interfaces
 
         Task<Package?> ExtraditionPackageAsync(string number);
 
+        Task<bool> ReturnPackageAsync(string number, long returnReasonId, long employeeId);
+
 
 
 

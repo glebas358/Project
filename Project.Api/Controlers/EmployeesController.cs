@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project.Api.Data;
 using Project.Api.Models;
+using Project.Api.Services;
 using Project.Api.Services.Interfaces;
 using Project.Domain.Models;
 using System.Security.Cryptography;
@@ -15,10 +16,19 @@ public class EmployeesController : ControllerBase
 {
     private readonly IAuthService _authService;
 
-    
-    public EmployeesController(IAuthService authService)
+    private readonly ITokenService _tokenService;
+    public class LoginResponse
+    {
+        public Employee Employee { get; set; }
+        public string Token { get; set; }
+    }
+
+
+
+    public EmployeesController(IAuthService authService, ITokenService tokenService)
     {
         _authService = authService;
+        _tokenService = tokenService;
     }
 
     [HttpPost("login")]
@@ -32,7 +42,9 @@ public class EmployeesController : ControllerBase
             return Unauthorized("Неверный логин или пароль");
         }
 
-        return Ok(employee);
+        var token = _tokenService.GenerateToken(employee);
+
+        return Ok(new LoginResponse { Employee = employee, Token = token });
     }
 
 

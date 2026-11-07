@@ -7,7 +7,7 @@ namespace Project.Api.Repositories.Interfaces
 
         Task<List<Package>> GetByClientIdAsync(long id);
 
-
+        Task<List<Package>> GetExpiredPackageAsync();
         Task UpdateAsync(Package package);
 
         

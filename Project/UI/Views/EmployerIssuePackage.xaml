@@ -52,8 +52,13 @@
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="#0E3255" 
                                             TextColor="#CBFAFF" 
-                                            FontAttributes="Bold"/>        
-                                    <Button Text="Возврат" FontAttributes="Bold" Margin="0,5" BackgroundColor="#0E3255" TextColor="#CBFAFF" />
+                                            FontAttributes="Bold"/>
+                                    <Button Text="Вернуть" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EmployerIssueViewModel}}, Path=ReturnPackageCommand}"
+                                            CommandParameter="{Binding .}" 
+                                            BackgroundColor="#0E3255" 
+                                            TextColor="#CBFAFF" 
+                                            FontAttributes="Bold" />            
                                 </VerticalStackLayout>
                             </Frame>
                         </DataTemplate>

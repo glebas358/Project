@@ -29,7 +29,7 @@ namespace Project.UI.ViewModels
         [ObservableProperty]
         private string _resultMessage = string.Empty;
         [ObservableProperty]
-        private string _resultColor = string.Empty;
+        private string _resultColor = "red";
 
         [ObservableProperty]
         private bool _isBusy = false;

@@ -2,6 +2,7 @@
 using Project.Application.Interfaces.Repositories;
 using Project.Application.Interfaces.Services;
 using Project.Application.Services;
+using Project.Infrastructure;
 using Project.Infrastructure.Repositories;
 using Project.UI.ViewModels;
 using Project.UI.Views;
@@ -23,28 +24,49 @@ namespace Project
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
             
-           
+            //через раздачу на телефоне (нужен впн)
+            //string apiBaseUrl = "http://10.103.140.227:5071/";
 
-         
-            string apiBaseUrl = "http://";
-
-
-
+            //при разработке
+            string apiBaseUrl = "http://192.168.0.109:5071/";
 
 
-            builder.Services.AddSingleton(sp => new HttpClient
+
+            builder.Services.AddHttpClient<IEmployeeRepository, ApiEmployeeRepository>(client =>
             {
-                BaseAddress = new Uri(apiBaseUrl),
-                Timeout = TimeSpan.FromMinutes(5) 
-            });
+                client.BaseAddress = new Uri(apiBaseUrl);
+                client.Timeout = TimeSpan.FromMinutes(5);
+            })
+            .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            builder.Services.AddHttpClient<IPackageRepository, ApiPackageRepository>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+                client.Timeout = TimeSpan.FromMinutes(5);
+            })
+            .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            builder.Services.AddHttpClient<IReturnReasonRepository, ApiReturnReasonRepository>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+                client.Timeout = TimeSpan.FromMinutes(5);
+            })
+            .AddHttpMessageHandler<AuthHeaderHandler>();
+
 
 
             // Infrastructure
-            builder.Services.AddTransient<IPackageRepository, ApiPackageRepository>();
-            //builder.Services.AddTransient<IClientRepository, ApiClientRepository>();
-            //builder.Services.AddTransient<IStorageLocationRepository, ApiStorageLocationRepository>();
-            //builder.Services.AddTransient<IOperationRepository, ApiOperationRepository>();
-            builder.Services.AddTransient<IEmployeeRepository, ApiEmployeeRepository>();
+
+
+            builder.Services.AddTransient<AuthHeaderHandler>();
+
+          
+
+            
+
+
+
+
 
             // Application
             builder.Services.AddSingleton<IAuthService, AuthService>();

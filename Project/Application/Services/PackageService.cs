@@ -43,5 +43,10 @@ namespace Project.Application.Services
             return await _packageRepository.ExtraditionPackageAsync(number);
         }
 
+        public async Task<bool> ReturnPackageAsync(string number, long reasonId)
+        {
+            return await _packageRepository.ReturnPackageAsync(number, reasonId);
+        }
+
     }   
 }

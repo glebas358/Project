@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.Api.Data;
 using Project.Api.Repositories.Interfaces;
+using Project.Domain.Enums;
 using Project.Domain.Models;
 
 namespace Project.Api.Repositories
@@ -28,6 +29,13 @@ namespace Project.Api.Repositories
             .Include(p => p.Client)          
             .Where(p => p.ClientId == clientId) 
             .ToListAsync();
+        }
+
+        public async Task<List<Package>> GetExpiredPackageAsync()
+        {
+            return await _context.Packages
+            .Where(p => p.Status == PackageStatus.AwaitingPickup && p.StorageDeadline < DateTime.UtcNow)
+            .ToListAsync(); 
         }
 
         public async Task UpdateAsync(Package package)

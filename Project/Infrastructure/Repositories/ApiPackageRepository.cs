@@ -2,6 +2,7 @@
 using Project.Application.Interfaces.Repositories;
 using Project.Domain.Enums;
 using Project.Domain.Models;
+using Project.Infrastructure.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Json;
@@ -31,13 +32,7 @@ namespace Project.Infrastructure.Repositories
 
             var response = await _httpClient.PostAsJsonAsync("api/packages/register", requestData);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                
-                var errorResponse = await response.Content.ReadFromJsonAsync<ServerError>();
-                
-                throw new Exception(errorResponse?.Message ?? "Неизвестная ошибка сервера");
-            }
+            await response.EnsureSuccessAsync();
 
 
             return await response.Content.ReadFromJsonAsync<Package>();
@@ -51,13 +46,7 @@ namespace Project.Infrastructure.Repositories
 
             var response = await _httpClient.PostAsJsonAsync("api/packages/searchByNumber/{number}", requestData);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                
-                var errorResponse = await response.Content.ReadFromJsonAsync<ServerError>();
-                
-                throw new Exception(errorResponse?.Message ?? "Неизвестная ошибка сервера");
-            }
+            await response.EnsureSuccessAsync();
 
             return await response.Content.ReadFromJsonAsync<Package>();
 
@@ -69,15 +58,9 @@ namespace Project.Infrastructure.Repositories
         {
             var requestData = new { Phone = phone };
 
-            var response = await _httpClient.PostAsJsonAsync("api/packages/searchByPhone/{ phone}", requestData);
+            var response = await _httpClient.PostAsJsonAsync("api/packages/searchByPhone/{phone}", requestData);
 
-            if (!response.IsSuccessStatusCode)
-            {
-
-                var errorResponse = await response.Content.ReadFromJsonAsync<ServerError>();
-
-                throw new Exception(errorResponse?.Message ?? "Неизвестная ошибка сервера");
-            }
+            await response.EnsureSuccessAsync();
 
             return await response.Content.ReadFromJsonAsync<List<Package>>();
         }
@@ -88,13 +71,7 @@ namespace Project.Infrastructure.Repositories
 
             var response = await _httpClient.PostAsJsonAsync("api/packages/searchByName/{name}", requestData);
 
-            if (!response.IsSuccessStatusCode)
-            {
-
-                var errorResponse = await response.Content.ReadFromJsonAsync<ServerError>();
-
-                throw new Exception(errorResponse?.Message ?? "Неизвестная ошибка сервера");
-            }
+            await response.EnsureSuccessAsync();
 
             return await response.Content.ReadFromJsonAsync<List<Package>>();
 
@@ -106,33 +83,28 @@ namespace Project.Infrastructure.Repositories
 
             var response = await _httpClient.PostAsJsonAsync("api/packages/extradition", requestData);
 
-            if (!response.IsSuccessStatusCode)
-            {
-
-                var errorResponse = await response.Content.ReadFromJsonAsync<ServerError>();
-
-                throw new Exception(errorResponse?.Message ?? "Неизвестная ошибка сервера");
-            }
+            await response.EnsureSuccessAsync();
+        
 
             return await response.Content.ReadFromJsonAsync<Package>();
         }
 
-
-
-        public class ServerError
+        public async Task<bool> ReturnPackageAsync(string number, long reasonId)
         {
-            public string Message { get; set; } = string.Empty;
+            var request = new { Number = number, ReturnReasonId = reasonId };
+            var response = await _httpClient.PostAsJsonAsync("api/packages/return", request);
+
+            await response.EnsureSuccessAsync();
+        
+
+            return true;
         }
 
+        
 
-        public async Task<List<Package>> GetByStatusAsync(PackageStatus status)
-        {
-            return null;
-        }
 
-        public async Task UpdateAsync(Package package)
-        {
+        
 
-        }
+        
     }
 }
