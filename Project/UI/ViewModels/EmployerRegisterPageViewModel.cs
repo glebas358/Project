@@ -1,21 +1,12 @@
-﻿using CommunityToolkit;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
-using Project.Application.Interfaces.Services;
-using Project.Application.Services;
-using Project.Domain.Enums;
-using Project.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Text;
+using Project.Application.Interfaces.Repositories;
+
 namespace Project.UI.ViewModels
 {
     public partial class EmployerRegisterPageViewModel : ObservableObject
     {
-        private readonly IPackageService _packageService;
+        private readonly IPackageRepository _apiPackageRepository;
 
         [ObservableProperty]
         private string _number = string.Empty;
@@ -26,17 +17,15 @@ namespace Project.UI.ViewModels
         [ObservableProperty]
         private string _cell = string.Empty;
 
-        [ObservableProperty]
-        private string _resultMessage = string.Empty;
-        [ObservableProperty]
-        private string _resultColor = "red";
+       
+
 
         [ObservableProperty]
         private bool _isBusy = false;
 
-        public EmployerRegisterPageViewModel(IPackageService packageService)
+        public EmployerRegisterPageViewModel(IPackageRepository apiPackageRepository)
         {
-            _packageService = packageService;
+            _apiPackageRepository = apiPackageRepository;
         }
 
         [RelayCommand]
@@ -51,26 +40,17 @@ namespace Project.UI.ViewModels
             try
             {
 
-                var package = await _packageService.RegistrAsync(Number.Trim(), Zone.Trim(), Cell.Trim());
+                var package = await _apiPackageRepository.RegisterPackageAsync(Number.Trim(), Zone.Trim(), Cell.Trim());
 
-                if (package == null)
-                {
-                    ResultColor = "red";
-                    ResultMessage = "Ошибка. Посылка отсутствует или уже зарегистрирована";
-                    Number = string.Empty;
-                    Zone = string.Empty;
-                    Cell = string.Empty;
-                    return;
-                }
 
-                ResultColor = "#009BAC";
-                ResultMessage = "Посылка успешно зарегистрирована!";
+                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Успех!","Посылка успешно зарегестрирована!", "ОК");
+
                 Number = string.Empty;
                 Zone = string.Empty;
                 Cell = string.Empty;
 
             }
-            catch (Exception ex) { ResultMessage = ex.Message; }
+            catch (Exception ex) { await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", ex.Message, "ОК"); }
 
             finally { IsBusy = false; }
 

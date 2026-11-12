@@ -20,13 +20,16 @@ public class AuthService : IAuthService
         
         var employee = await _employeeRepository.GetByLoginAsync(login);
 
-        if (employee == null) return null;
+        if (employee == null)
+            throw new AppException("Неверный логин или пароль", 401);
 
-        
+
         var passwordHash = HashPassword(password);
-        if (employee.PasswordHash != passwordHash) return null;
-
         
+        if (employee.PasswordHash != passwordHash)
+            throw new AppException("Неверный логин или пароль", 401);
+
+
         return employee;
     }
 

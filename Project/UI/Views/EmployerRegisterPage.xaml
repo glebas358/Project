@@ -9,7 +9,7 @@
         <ScrollView>
 
             <VerticalStackLayout Padding="30" HorizontalOptions="Center">
-                <Label Text="{Binding ResultMessage}" Margin="30" HorizontalTextAlignment="Center" TextColor="{Binding ResultColor}" FontSize="18"  FontAttributes="Bold"/>
+                
 
                 <Editor Placeholder="Введите номер посылки" Text="{Binding Number}" FontSize="18" BackgroundColor="#009BAC" TextColor="#CBFAFF" PlaceholderColor="#0E3255"/>
 

@@ -17,16 +17,19 @@ namespace Project.Api.Services
 
         private readonly IReturnRepository _returnRepository;
 
-        public PackageService(IPackageRepository packageRepository, IStorageLocationRepository storageLocationRepository, IClientRepository clientRepository, IReturnReasonRepository returnReasonRepository, IReturnRepository returnRepository)
+        private readonly IOperationRepository _operationRepository;
+
+        public PackageService(IPackageRepository packageRepository, IStorageLocationRepository storageLocationRepository, IClientRepository clientRepository, IReturnReasonRepository returnReasonRepository, IReturnRepository returnRepository, IOperationRepository operationRepository)
         {
             _packageRepository = packageRepository;
             _storageLocationRepository = storageLocationRepository;
             _clientRepository = clientRepository;
             _returnReasonRepository = returnReasonRepository;
             _returnRepository = returnRepository;
+            _operationRepository = operationRepository;
         }
 
-        public async Task<Package> RegisterPackageAsync(string number, string zone, string cell)
+        public async Task<Package> RegisterPackageAsync(string number, string zone, string cell, long employeeId)
         {
             var package = await _packageRepository.GetByNumberAsync(number);
 
@@ -55,6 +58,14 @@ namespace Project.Api.Services
             
             package.StorageLocationId = location.Id;
             await _packageRepository.UpdateAsync(package);
+
+            await _operationRepository.AddAsync(new Operation
+            {
+                PackageId = package.Id,
+                EmployeeId = employeeId, 
+                OperationType = OperationType.Accept,
+                Timestamp = DateTime.UtcNow
+            });
 
 
             return package;
@@ -100,7 +111,8 @@ namespace Project.Api.Services
                     continue;
                 }
 
-
+                if (resultPackages.Count == 0)
+                    throw new AppException("У данного клиента не найдено активных посылок", 404);
 
                 resultPackages.Add(package);
 
@@ -123,6 +135,8 @@ namespace Project.Api.Services
 
             var packages = await _packageRepository.GetByClientIdAsync(client.Id);
 
+            
+
             var resultPackages = new List<Package>();
 
             foreach (var package in packages)
@@ -133,16 +147,20 @@ namespace Project.Api.Services
                 }
 
 
+
                 resultPackages.Add(package);
 
             }
+
+            if (resultPackages.Count == 0)
+                throw new AppException("У данного клиента не найдено активных посылок", 404);
 
 
             return resultPackages;
 
         }
 
-        public async Task<Package?> ExtraditionPackageAsync(string number)
+        public async Task<Package?> ExtraditionPackageAsync(string number, long employeeId)
         {
             var package = await _packageRepository.GetByNumberAsync(number);
 
@@ -161,6 +179,8 @@ namespace Project.Api.Services
 
             package.Status = PackageStatus.Issued;
 
+            
+
             location.IsOccupied = false;
             
             await _storageLocationRepository.UpdateAsync(location);
@@ -168,6 +188,14 @@ namespace Project.Api.Services
             package.StorageLocationId = null;
 
             await _packageRepository.UpdateAsync(package);
+
+            await _operationRepository.AddAsync(new Operation
+            {
+                PackageId = package.Id,
+                EmployeeId = employeeId,
+                OperationType = OperationType.Issue,
+                Timestamp = DateTime.UtcNow
+            });
 
             return package;
 
@@ -202,7 +230,7 @@ namespace Project.Api.Services
 
             package.StorageLocationId = null;
 
-            //var returnReason = await _returnReasonRepository.GetById(returnReasonId);
+            
 
 
             await _packageRepository.UpdateAsync(package);
@@ -216,6 +244,14 @@ namespace Project.Api.Services
             };
 
             await _returnRepository.AddAsync(returnRecord);
+
+            await _operationRepository.AddAsync(new Operation
+            {
+                PackageId = package.Id,
+                EmployeeId = employeeId,
+                OperationType = OperationType.Return,
+                Timestamp = DateTime.UtcNow
+            });
 
             return true;
 

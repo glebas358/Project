@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Project.Application.Interfaces.Repositories;
-using Project.Application.Interfaces.Services;
-using Project.Application.Services;
 using Project.Infrastructure;
 using Project.Infrastructure.Repositories;
 using Project.UI.ViewModels;
@@ -23,9 +21,12 @@ namespace Project
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
-            
-            
-            string apiBaseUrl = "http://";
+
+            //через раздачу на телефоне (нужен впн)
+            //string apiBaseUrl = "http://10.172.182.227:5071/";
+
+            //при разработке
+            string apiBaseUrl = "http://192.168.0.111:5071/";
 
 
 
@@ -50,24 +51,27 @@ namespace Project
             })
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
+            builder.Services.AddHttpClient<IOperationRepository, ApiOperationRepository>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+                client.Timeout = TimeSpan.FromMinutes(5);
+            })
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
+            builder.Services.AddHttpClient<IManagerNoteRepository, ApiManagerNoteRepository>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+                client.Timeout = TimeSpan.FromMinutes(5);
+            })
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            // Infrastructure
 
 
             builder.Services.AddTransient<AuthHeaderHandler>();
 
-          
 
             
-
-
-
-
-
-            // Application
-            builder.Services.AddSingleton<IAuthService, AuthService>();
-            builder.Services.AddSingleton<IPackageService, PackageService>();
+            
             
 
             // UI
@@ -80,7 +84,11 @@ namespace Project
             builder.Services.AddTransient<EmployerIssuePackage>();
             builder.Services.AddTransient<EmployerIssueViewModel>();
 
+            builder.Services.AddTransient<ManagerOperationPage>();
+            builder.Services.AddTransient<ManagerOperationViewModel>();
 
+            builder.Services.AddTransient<ManagerNotesPage>();
+            builder.Services.AddTransient<ManagerNotesViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

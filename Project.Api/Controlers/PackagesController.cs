@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Project.Api.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using Project.Api.DTOs;
 using Project.Api.Services.Interfaces;
 using Project.Domain.Models;
@@ -30,7 +27,13 @@ public class PackagesController : ControllerBase
     {
         try
         {
-            var package = await _packageService.RegisterPackageAsync(request.Number, request.Zone, request.Cell);
+
+            var employeeIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(employeeIdStr)) return Unauthorized();
+
+            long employeeId = long.Parse(employeeIdStr);
+
+            var package = await _packageService.RegisterPackageAsync(request.Number, request.Zone, request.Cell, employeeId);
             return Ok(package);
         }
         catch (AppException ex) 
@@ -117,7 +120,12 @@ public class PackagesController : ControllerBase
         try
         {
 
-            var package = await _packageService.ExtraditionPackageAsync(request.Number);
+            var employeeIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(employeeIdStr)) return Unauthorized();
+
+            long employeeId = long.Parse(employeeIdStr);
+
+            var package = await _packageService.ExtraditionPackageAsync(request.Number, employeeId);
 
 
             return Ok(package);

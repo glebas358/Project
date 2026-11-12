@@ -71,6 +71,31 @@ namespace Project.Api.Migrations
                     b.ToTable("Employees");
                 });
 
+            modelBuilder.Entity("Project.Domain.Models.ManagerNote", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("ManagerNotes");
+                });
+
             modelBuilder.Entity("Project.Domain.Models.Operation", b =>
                 {
                     b.Property<long>("Id")
@@ -221,6 +246,17 @@ namespace Project.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("StorageLocations");
+                });
+
+            modelBuilder.Entity("Project.Domain.Models.ManagerNote", b =>
+                {
+                    b.HasOne("Project.Domain.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Project.Domain.Models.Operation", b =>

@@ -1,8 +1,5 @@
-﻿using Project.Application.Services;
-using System;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Text;
+﻿using System.Net.Http.Headers;
+
 
 namespace Project.Infrastructure
 {

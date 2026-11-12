@@ -34,17 +34,29 @@ public class EmployeesController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<Employee>> Login([FromBody] LoginRequest request)
     {
-        
-        var employee = await _authService.LoginAsync(request.Login, request.Password);
 
-        if (employee == null)
+        try
         {
-            return Unauthorized("Неверный логин или пароль");
+
+            var employee = await _authService.LoginAsync(request.Login, request.Password);
+
+
+            var token = _tokenService.GenerateToken(employee);
+
+            return Ok(new LoginResponse { Employee = employee, Token = token });
+        }
+        catch (AppException ex)
+        {
+
+            return StatusCode(ex.StatusCode, new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+
+            return StatusCode(500, new { message = "Внутренняя ошибка сервера", details = ex.Message });
         }
 
-        var token = _tokenService.GenerateToken(employee);
 
-        return Ok(new LoginResponse { Employee = employee, Token = token });
     }
 
 

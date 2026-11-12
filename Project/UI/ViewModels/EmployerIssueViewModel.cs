@@ -1,17 +1,10 @@
-﻿using CommunityToolkit;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 using Project.Application.Interfaces.Repositories;
-using Project.Application.Interfaces.Services;
-using Project.Application.Services;
 using Project.Domain.Enums;
 using Project.Domain.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Text;
+
 
 
 
@@ -19,7 +12,7 @@ namespace Project.UI.ViewModels
 {
     public partial class EmployerIssueViewModel : ObservableObject
     {
-        private readonly IPackageService _packageService;
+        private readonly IPackageRepository _apiPackageRepository;
 
         private readonly IReturnReasonRepository _returnReasonRepository;
 
@@ -99,9 +92,9 @@ namespace Project.UI.ViewModels
             _ => "Введите запрос"
         };
 
-        public EmployerIssueViewModel(IPackageService packageService, IReturnReasonRepository returnReasonRepository)
+        public EmployerIssueViewModel(IPackageRepository apiPackageRepository, IReturnReasonRepository returnReasonRepository)
         {
-            _packageService = packageService;
+            _apiPackageRepository = apiPackageRepository;
             _returnReasonRepository = returnReasonRepository;
         }
 
@@ -122,7 +115,7 @@ namespace Project.UI.ViewModels
                     case SearchType.ByNumber:
                         
 
-                        var package = await _packageService.SearchByNumberAsync(SearchQuery.Trim());
+                        var package = await _apiPackageRepository.SearchByNumberAsync(SearchQuery.Trim());
                         if (package != null)
                         {
 
@@ -145,7 +138,7 @@ namespace Project.UI.ViewModels
 
                         
 
-                        var packagePhone = await _packageService.SearchByPhoneAsync(SearchQuery.Trim());
+                        var packagePhone = await _apiPackageRepository.SearchByPhoneAsync(SearchQuery.Trim());
 
                         if (packagePhone != null && packagePhone.Any())
                         {
@@ -171,7 +164,7 @@ namespace Project.UI.ViewModels
 
                     case SearchType.ByName:
                         
-                        var namePackage = await _packageService.SearchByNameAsync(SearchQuery.Trim());
+                        var namePackage = await _apiPackageRepository.SearchByNameAsync(SearchQuery.Trim());
 
                         if (namePackage != null && namePackage.Any())
                         {
@@ -228,7 +221,7 @@ namespace Project.UI.ViewModels
 
             try
             {
-                var issuedPackage = await _packageService.ExtraditionPackageAsync(selectedPackage.Number);
+                var issuedPackage = await _apiPackageRepository.ExtraditionPackageAsync(selectedPackage.Number);
 
                 if (issuedPackage != null)
                 {
@@ -250,7 +243,7 @@ namespace Project.UI.ViewModels
 
             try
             {
-                // 1. Загружаем причины возврата с сервера
+               
                 var reasons = await _returnReasonRepository.GetActiveReasonsAsync();
                 if (reasons == null || reasons.Count == 0)
                 {
@@ -258,7 +251,7 @@ namespace Project.UI.ViewModels
                     return;
                 }
 
-                // 2. Показываем окошко выбора причины
+                
                 var reasonNames = reasons.Select(r => r.Name).ToArray();
                 string selectedReasonName = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayActionSheetAsync(
                     "Выберите причину возврата",
@@ -266,14 +259,14 @@ namespace Project.UI.ViewModels
                     null,
                     reasonNames);
 
-                // Если сотрудник нажал "Отмена" — выходим
+                
                 if (string.IsNullOrEmpty(selectedReasonName) || selectedReasonName == "Отмена") return;
 
-                // Находим ID выбранной причины
+                
                 var selectedReason = reasons.FirstOrDefault(r => r.Name == selectedReasonName);
                 if (selectedReason == null) return;
 
-                // 3. Показываем окошко подтверждения номера (как при выдаче)
+                
                 string confirmNumber = await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayPromptAsync(
                     title: "Подтверждение возврата",
                     message: $"Введите номер посылки ({selectedPackage.Number}) для подтверждения:",
@@ -288,24 +281,21 @@ namespace Project.UI.ViewModels
                     return;
                 }
 
-                // 4. Отправляем запрос на сервер
-                bool success = await _packageService.ReturnPackageAsync(selectedPackage.Number, selectedReason.Id);
+            
+                bool success = await _apiPackageRepository.ReturnPackageAsync(selectedPackage.Number, selectedReason.Id);
 
                 if (success)
                 {
                     await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Успех", "Возврат успешно оформлен!", "ОК");
 
-                    // Удаляем посылку из списка на экране
+                    
                     if (FoundPackages.Contains(selectedPackage))
                     {
                         FoundPackages.Remove(selectedPackage);
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", ex.Message, "ОК");
-            }
+            catch (Exception ex) { await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", ex.Message, "ОК"); }
         }
 
 

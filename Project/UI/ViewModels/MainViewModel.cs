@@ -1,24 +1,16 @@
-﻿
-using CommunityToolkit;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Project.Application.Interfaces.Services;
-using Project.Application.Services;
+using Project.Application.Interfaces.Repositories; 
 using Project.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Text;
+
 
 
 namespace Project.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        private readonly IAuthService _authService;
+        private readonly IEmployeeRepository _apiEmployeRepository;
 
-        //private readonly IDeadlineService _deadlineService;
 
         [ObservableProperty]
         private string _login = string.Empty;
@@ -42,10 +34,10 @@ namespace Project.ViewModels
         UserRole.Manager
         };
         
-        public MainViewModel(IAuthService authService)
+        public MainViewModel(IEmployeeRepository apiEmployeRepository)
         {
-            _authService = authService;
-            //_deadlineService = deadlineService;
+            _apiEmployeRepository = apiEmployeRepository;
+            
         }
 
         [RelayCommand]
@@ -58,25 +50,14 @@ namespace Project.ViewModels
             IsBusy = true;
             try
             {
-                var employee = await _authService.LoginAsync(Login.Trim(), Password);
+                var employee = await _apiEmployeRepository.LoginAsync(Login.Trim(), Password);
 
 
-                if (employee == null)
-                {
-                    ResultMessage = "Неверный логин или пароль";
-                    return;
-                }
 
                 
 
                 if (employee.Role == UserRole.Employee)
                 {
-
-
-                    //ResultMessage = $"Добро пожаловать, {employee.Name} ({employee.Role})";
-                    //_ = Task.Run(async () => await _deadlineService.CheckExpiredPackagesAsync());
-
-
 
 
                     if (Microsoft.Maui.Controls.Application.Current?.MainPage is AppShell shell)
@@ -88,11 +69,14 @@ namespace Project.ViewModels
                 }
                 else if (employee.Role == UserRole.Manager)
                 {
-                    ResultMessage = $"Добро пожаловать, {employee.Name} ({employee.Role})";
+                    if (Microsoft.Maui.Controls.Application.Current?.MainPage is AppShell shell)
+                    {
+                        shell.InitializeAsManager();
+                    }
                 }
 
             }
-            catch (Exception ex) { ResultMessage = $"Ошибка передачи данных. Попробуйте позднее \n{ex}"; }
+            catch (Exception ex) { await Microsoft.Maui.Controls.Application.Current.MainPage.DisplayAlertAsync("Ошибка", ex.Message, "ОК"); }
 
             finally { IsBusy = false; }
         }

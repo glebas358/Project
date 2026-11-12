@@ -1,9 +1,7 @@
 ﻿using Project.Application.Interfaces.Repositories;
 using Project.Domain.Models;
-using System;
-using System.Collections.Generic;
 using System.Net.Http.Json;
-using System.Text;
+
 
 namespace Project.Infrastructure.Repositories
 {

@@ -16,6 +16,8 @@ namespace Project.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            
+
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -80,6 +82,13 @@ namespace Project.Api
 
             builder.Services.AddScoped<ITokenService, TokenService>();
 
+            builder.Services.AddScoped<IOperationRepository, OperationRepository>();
+
+            builder.Services.AddScoped<IOperationService, OperationService>();
+
+            builder.Services.AddScoped<IManagerNoteRepository, ManagerNoteRepository>();
+
+            builder.Services.AddScoped<IManagerNoteService, ManagerNoteService>();
 
 
 
@@ -105,8 +114,8 @@ namespace Project.Api
             
 
 
-            app.UseAuthentication(); // Проверяем токен (кто ты?)
-            app.UseAuthorization();  // Проверяем права (можно ли тебе это?)
+            app.UseAuthentication(); 
+            app.UseAuthorization();  
 
 
             app.MapControllers();

@@ -11,6 +11,7 @@ namespace Project
             Routing.RegisterRoute(nameof(EmployerRegisterPage), typeof(EmployerRegisterPage));
             Routing.RegisterRoute(nameof(EmployerIssuePackage), typeof(EmployerIssuePackage));
 
+
             InitializeAsUnauthenticated();
 
         }
@@ -32,15 +33,15 @@ namespace Project
         public void InitializeAsEmployee()
         {
             Items.Clear();
-            
+
             var tabBar = new TabBar();
 
-            
+
             tabBar.Items.Add(new ShellContent
             {
                 Title = "Прием",
                 ContentTemplate = new DataTemplate(typeof(EmployerRegisterPage))
-            
+
             });
 
             tabBar.Items.Add(new ShellContent
@@ -51,9 +52,33 @@ namespace Project
             });
 
             Items.Add(tabBar);
+        }
 
-            
-            
+        public void InitializeAsManager()
+        {
+            Items.Clear();
+
+            var tabBar = new TabBar();
+
+
+            tabBar.Items.Add(new ShellContent
+            {
+                Title = "Журнал операций",
+                ContentTemplate = new DataTemplate(typeof(ManagerOperationPage))
+
+            });
+
+            tabBar.Items.Add(new ShellContent
+            {
+                Title = "Заметки",
+                ContentTemplate = new DataTemplate(typeof(ManagerNotesPage))
+
+            });
+
+
+
+            Items.Add(tabBar);
+  
         }
     }
 }

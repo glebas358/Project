@@ -16,6 +16,7 @@ namespace Project.Api.Data
         public DbSet<Operation> Operations { get; set; }
         public DbSet<Return> Returns { get; set; }
         public DbSet<ReturnReason> ReturnReasons { get; set; }
+        public DbSet<ManagerNote> ManagerNotes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +66,11 @@ namespace Project.Api.Data
                 .HasOne(r => r.ReturnReason)
                 .WithMany()
                 .HasForeignKey(r => r.ReturnReasonId);
+
+           modelBuilder.Entity<ManagerNote>()
+                .HasOne(p => p.Employee)
+                .WithMany()
+                .HasForeignKey(p => p.EmployeeId);
         }
     }
 }

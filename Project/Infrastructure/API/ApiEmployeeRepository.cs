@@ -1,9 +1,7 @@
 ﻿using Project.Application.Interfaces.Repositories;
-using Project.Application.Services;
 using Project.Domain.Models;
-using System.Net;
+using Project.Infrastructure.Helpers;
 using System.Net.Http.Json;
-using static Project.Infrastructure.Repositories.ApiEmployeeRepository;
 
 namespace Project.Infrastructure.Repositories;
 
@@ -34,14 +32,8 @@ public class ApiEmployeeRepository : IEmployeeRepository
         
         var response = await _httpClient.PostAsJsonAsync("api/employees/login", requestData);
 
-        
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            return null;
-        }
 
-        
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessAsync();
 
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
 
@@ -52,7 +44,9 @@ public class ApiEmployeeRepository : IEmployeeRepository
             return loginResponse.Employee;
         }
 
-        return null;
+        return await response.Content.ReadFromJsonAsync<Employee>();
+
+
     }
 
 

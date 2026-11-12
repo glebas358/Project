@@ -52,7 +52,7 @@
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="#0E3255" 
                                             TextColor="#CBFAFF" 
-                                            FontAttributes="Bold"/>
+                                            FontAttributes="Bold" />
                                     <Button Text="Вернуть" 
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EmployerIssueViewModel}}, Path=ReturnPackageCommand}"
                                             CommandParameter="{Binding .}" 
